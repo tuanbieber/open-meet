@@ -67,9 +67,6 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log the raw body
-	//fmt.Printf("Raw Body: %s\n", string(bodyBytes))
-
 	// Restore the body for further processing
 	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 
@@ -98,6 +95,9 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to parse claims", http.StatusInternalServerError)
 			return
 		}
+
+		// Print user email to server logs
+		fmt.Printf("User logged in - Email: %s\n", claims.Email)
 
 		// Return user information as JSON response
 		w.Header().Set("Content-Type", "application/json")
