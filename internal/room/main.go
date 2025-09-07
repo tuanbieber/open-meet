@@ -1,6 +1,8 @@
 package room
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -21,16 +23,31 @@ type CreateRoomResponse struct {
 	Room *Room `json:"room"`
 }
 
-func NewRoom(name, createdBy string) *Room {
+// generateRoomID creates a shorter room ID by hashing a UUID
+func generateRoomID() string {
+	// Generate a UUID first
+	newString := uuid.NewString()
+
+	// Create SHA-256 hash
+	hasher := sha256.New()
+	hasher.Write([]byte(newString))
+	hash := hasher.Sum(nil)
+
+	// Convert to URL-safe base64 and take first 10 characters
+	encoded := base64.URLEncoding.EncodeToString(hash)
+	return encoded[:10]
+}
+
+func NewRoom(createdBy string) *Room {
 	return &Room{
-		Name:      name,
+		Name:      generateRoomID(),
 		CreatedBy: createdBy,
 		CreatedAt: time.Now(),
 	}
 }
 
-// CreateHandler handles POST /rooms requests
-func CreateHandler(w http.ResponseWriter, r *http.Request) {
+// CreateRoomHandler handles POST /rooms requests
+func CreateRoomHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -43,9 +60,8 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use authenticated user's email as creator
-	newRoomName := uuid.NewString()
-	newRoom := NewRoom(newRoomName, userEmail)
+	// Create new room with hashed ID
+	newRoom := NewRoom(userEmail) // name parameter is ignored now
 	response := CreateRoomResponse{Room: newRoom}
 
 	// Log room creation
@@ -56,5 +72,5 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(response)
 }

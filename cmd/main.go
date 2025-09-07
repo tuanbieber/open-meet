@@ -41,7 +41,7 @@ func main() {
 
 	mux.HandleFunc("/livekit-tokens", participant.LiveKitTokenHandler)
 	mux.HandleFunc("/callback", callback.HandleCallback)
-	mux.HandleFunc("/rooms", room.CreateHandler)
+	mux.HandleFunc("/rooms", room.CreateRoomHandler)
 
 	// Setup CORS
 	c := cors.New(cors.Options{
