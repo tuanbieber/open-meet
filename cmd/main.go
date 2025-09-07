@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/cors"
+	"github.com/tuanbieber/open-meet/internal/participant"
 )
 
 //var (
@@ -29,7 +30,14 @@ func init() {
 	//}
 
 	// Validate required environment variables
-	requiredEnvVars := []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "OAUTH_REDIRECT_URL", "ALLOWED_ORIGINS"}
+	requiredEnvVars := []string{
+		"GOOGLE_CLIENT_ID",
+		"GOOGLE_CLIENT_SECRET",
+		"OAUTH_REDIRECT_URL",
+		"ALLOWED_ORIGINS",
+		"LIVEKIT_API_KEY",
+		"LIVEKIT_API_SECRET",
+	}
 	for _, envVar := range requiredEnvVars {
 		if os.Getenv(envVar) == "" {
 			fmt.Printf("Error: %s environment variable is required\n", envVar)
@@ -139,7 +147,7 @@ func main() {
 		}
 
 		// Generate LiveKit token
-		token, err := GenerateLiveKitToken(req.RoomName, req.Identity)
+		token, err := participant.GenerateLiveKitToken(req.RoomName, req.Identity)
 		if err != nil {
 			http.Error(w, "Failed to generate token: "+err.Error(), http.StatusInternalServerError)
 			return

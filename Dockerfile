@@ -11,7 +11,7 @@ RUN go mod download
 COPY . .
 
 # Build binary
-RUN go build -o open-meet main.go
+RUN go build -o open-meet cmd/*.go
 
 # Run stage
 FROM alpine:latest
@@ -21,7 +21,6 @@ WORKDIR /app
 COPY --from=builder /app/open-meet .
 
 # Expose app port (make sure this matches fly.toml internal_port)
-EXPOSE 8080
 
 # Run the app
 CMD ["./open-meet"]
