@@ -1,12 +1,16 @@
 package participant
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/livekit/protocol/auth"
+	"github.com/livekit/protocol/livekit"
+	lksdk "github.com/livekit/server-sdk-go/v2"
 )
 
 const (
@@ -15,18 +19,55 @@ const (
 )
 
 func GenerateLiveKitToken(roomName, identity string) (string, error) {
+	// Check if room exists using LiveKit's room service
+	hostURL := os.Getenv("LIVEKIT_SERVER")
 	apiKey := os.Getenv("LIVEKIT_API_KEY")
 	apiSecret := os.Getenv("LIVEKIT_API_SECRET")
 
+	// Create room service client
+	roomClient := lksdk.NewRoomServiceClient(hostURL, apiKey, apiSecret)
+
+	// Check if room exists
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	rooms, err := roomClient.ListRooms(ctx, &livekit.ListRoomsRequest{
+		Names: []string{roomName},
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to get room, error: %v", err)
+	}
+	if len(rooms.Rooms) == 0 {
+		return "", fmt.Errorf("room %s does not exist", roomName)
+	}
+
+	// Generate token for existing room
 	at := auth.NewAccessToken(apiKey, apiSecret)
 	grant := &auth.VideoGrant{
-		Room:     roomName,
-		RoomJoin: true,
+		RoomCreate:           false,
+		RoomList:             false,
+		RoomRecord:           false,
+		RoomAdmin:            false,
+		RoomJoin:             true,
+		Room:                 roomName,
+		CanPublish:           nil,
+		CanSubscribe:         nil,
+		CanPublishData:       nil,
+		CanPublishSources:    nil,
+		CanUpdateOwnMetadata: nil,
+		IngressAdmin:         false,
+		Hidden:               false,
+		Recorder:             false,
+		Agent:                false,
+		CanSubscribeMetrics:  nil,
+		DestinationRoom:      "",
 	}
 	at.SetVideoGrant(grant).
 		SetIdentity(identity).
 		SetValidFor(tokenDuration)
+
 	// TODO: How long does the token last?
+
 	return at.ToJWT()
 }
 
@@ -35,7 +76,6 @@ type LiveKitTokenRequest struct {
 	Identity string `json:"identity"`
 }
 
-// LiveKitTokenHandler handles POST /get-livekit-token requests
 func LiveKitTokenHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

@@ -1,4 +1,4 @@
-package callback
+package oauth
 
 import (
 	"bytes"
@@ -27,8 +27,8 @@ type GoogleClaims struct {
 	jwt.RegisteredClaims
 }
 
-// HandleCallback processes Google Sign-In callback with token verification
-func HandleCallback(w http.ResponseWriter, r *http.Request) {
+// CallbackHandler processes Google Sign-In callback with token verification
+func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Log request information
 	//fmt.Printf("Method: %s\n", r.Method)
 	//fmt.Printf("Headers: %+v\n", r.Header)

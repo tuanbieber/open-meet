@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"open-meet/internal/callback"
+	"open-meet/internal/oauth"
 	"open-meet/internal/participant"
 	"open-meet/internal/room"
 
@@ -40,8 +40,9 @@ func main() {
 	})
 
 	mux.HandleFunc("/livekit-tokens", participant.LiveKitTokenHandler)
-	mux.HandleFunc("/callback", callback.HandleCallback)
+	mux.HandleFunc("/callback", oauth.CallbackHandler)
 	mux.HandleFunc("/rooms", room.CreateRoomHandler)
+	mux.HandleFunc("/rooms/", room.GetRoomHandler)
 
 	// Setup CORS
 	c := cors.New(cors.Options{
