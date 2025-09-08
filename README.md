@@ -117,7 +117,6 @@ go run cmd/main.go
 ```
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-OAUTH_REDIRECT_URL=your_oauth_redirect_url
 ALLOWED_ORIGINS=your_allowed_origins
 LIVEKIT_API_KEY=your_livekit_api_key
 LIVEKIT_API_SECRET=your_livekit_api_secret

@@ -15,7 +15,6 @@ type Config struct {
 	// Google OAuth
 	GoogleClientID     string
 	GoogleClientSecret string
-	OAuthRedirectURL   string
 
 	// LiveKit
 	LiveKitServer    string
@@ -34,7 +33,6 @@ func LoadConfig() (*Config, error) {
 	required := []string{
 		"GOOGLE_CLIENT_ID",
 		"GOOGLE_CLIENT_SECRET",
-		"OAUTH_REDIRECT_URL",
 		"ALLOWED_ORIGINS",
 		"LIVEKIT_API_KEY",
 		"LIVEKIT_API_SECRET",
@@ -51,7 +49,6 @@ func LoadConfig() (*Config, error) {
 	return &Config{
 		GoogleClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		GoogleClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		OAuthRedirectURL:   os.Getenv("OAUTH_REDIRECT_URL"),
 		LiveKitServer:      os.Getenv("LIVEKIT_SERVER"),
 		LiveKitAPIKey:      os.Getenv("LIVEKIT_API_KEY"),
 		LiveKitAPISecret:   os.Getenv("LIVEKIT_API_SECRET"),
