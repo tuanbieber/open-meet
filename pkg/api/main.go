@@ -53,7 +53,7 @@ func NewEngine(config *Config) (*gin.Engine, error) {
 	}
 	r.Use(middleware.Cors())
 
-	v1 := r.Group("/", nil)
+	v1 := r.Group("/")
 	{
 		// Room endpoints with middleware chain
 		rooms := v1.Group("/rooms")
@@ -65,7 +65,11 @@ func NewEngine(config *Config) (*gin.Engine, error) {
 			rooms.POST("", svc.CreateRoomHandler)
 			rooms.GET("/:room_name", svc.GetRoomHandler)
 
-			rooms.POST("/callback", svc.CallbackHandler)
+		}
+
+		oauth := v1.Group("/")
+		{
+			oauth.POST("/callback", svc.CallbackHandler)
 		}
 	}
 
