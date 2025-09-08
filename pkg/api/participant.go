@@ -57,9 +57,7 @@ func (s *Service) LiveKitTokenHandler(c *gin.Context) {
 	// Generate token
 	token, err := s.Store.Participant().GenerateToken(roomCtx, req.RoomName, userEmail)
 	if err != nil {
-		log.Error(err, "failed to generate token",
-			"roomName", req.RoomName,
-			"identity", userEmail)
+		log.Error(err, "failed to generate token", "roomName", req.RoomName, "identity", userEmail)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to generate token",
 			"code":  "TOKEN_GENERATION_FAILED",
@@ -67,10 +65,7 @@ func (s *Service) LiveKitTokenHandler(c *gin.Context) {
 		return
 	}
 
-	log.Info("token generated successfully",
-		"roomName", req.RoomName,
-		"identity", userEmail,
-		"roomSid", room.Sid)
+	log.Info("token generated successfully", "roomName", req.RoomName, "identity", userEmail, "roomSid", room.Sid)
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,

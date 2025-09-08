@@ -27,9 +27,7 @@ func (s *Service) CreateRoomHandler(c *gin.Context) {
 	roomName := generateRoomName()
 	lkRoom, err := s.Store.Room().Create(c.Request.Context(), roomName, userEmail)
 	if err != nil {
-		log.Error(err, "failed to create room",
-			"roomName", roomName,
-			"creator", userEmail)
+		log.Error(err, "failed to create room", "roomName", roomName, "creator", userEmail)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
