@@ -13,7 +13,7 @@ import (
 // Room defines the interface for room operations
 type Room interface {
 	Create(ctx context.Context, name, creatorEmail string) (*livekit.Room, error)
-	Get(ctx context.Context, name string) (*livekit.Room, error)
+	Get(ctx context.Context, name string) (*livekit.Room, bool, error)
 	List(ctx context.Context) ([]*livekit.Room, error)
 	Delete(ctx context.Context, name string) error
 	SetHost(roomName, hostEmail string)
@@ -60,20 +60,20 @@ func (r *LiveKitRoom) Create(ctx context.Context, name, creatorEmail string) (*l
 	return room, nil
 }
 
-func (r *LiveKitRoom) Get(ctx context.Context, name string) (*livekit.Room, error) {
+func (r *LiveKitRoom) Get(ctx context.Context, name string) (*livekit.Room, bool, error) {
 	resp, err := r.client.ListRooms(ctx, &livekit.ListRoomsRequest{
 		Names: []string{name},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get room %s: %w", name, err)
+		return nil, false, fmt.Errorf("failed to get room %s: %w", name, err)
 	}
 
 	rooms := resp.GetRooms()
 	if len(rooms) == 0 {
-		return nil, fmt.Errorf("room %s not found", name)
+		return nil, false, nil
 	}
 
-	return rooms[0], nil
+	return rooms[0], true, nil
 }
 
 // List returns all rooms from LiveKit server

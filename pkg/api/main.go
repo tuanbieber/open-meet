@@ -53,24 +53,21 @@ func NewEngine(config *Config) (*gin.Engine, error) {
 	}
 	r.Use(middleware.Cors())
 
-	v1 := r.Group("/")
+	room := r.Group("/rooms").Use(middleware.Authentication(), middleware.RateLimitRoom())
 	{
-		// Room endpoints with middleware chain
-		rooms := v1.Group("/rooms")
-		rooms.Use(
-			middleware.Authentication(),
-			middleware.RateLimitRoom(),
-		)
-		{
-			rooms.POST("", svc.CreateRoomHandler)
-			rooms.GET("/:room_name", svc.GetRoomHandler)
+		room.POST("", svc.CreateRoomHandler)
+		room.GET("/:room_name", svc.GetRoomHandler)
 
-		}
+	}
 
-		oauth := v1.Group("/")
-		{
-			oauth.POST("/callback", svc.CallbackHandler)
-		}
+	oauth := r.Group("/")
+	{
+		oauth.POST("/callback", svc.CallbackHandler)
+	}
+
+	participant := r.Group("/").Use(middleware.Authentication())
+	{
+		participant.POST("/livekit-tokens", svc.LiveKitTokenHandler)
 	}
 
 	return r, nil

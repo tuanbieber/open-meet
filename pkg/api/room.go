@@ -62,9 +62,14 @@ func (s *Service) GetRoomHandler(c *gin.Context) {
 		return
 	}
 
-	lkRoom, err := s.Store.Room().Get(c.Request.Context(), roomName)
+	lkRoom, found, err := s.Store.Room().Get(c.Request.Context(), roomName)
 	if err != nil {
 		log.Error(err, "failed to get room", "roomName", roomName)
+		c.JSON(http.StatusNotFound, gin.H{"error": "room not found"})
+		return
+	}
+	if !found {
+		log.Info("room not found", "roomName", roomName)
 		c.JSON(http.StatusNotFound, gin.H{"error": "room not found"})
 		return
 	}
