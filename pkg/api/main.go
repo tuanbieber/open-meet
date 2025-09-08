@@ -45,6 +45,7 @@ func NewEngine(config *Config) (*gin.Engine, error) {
 	}
 
 	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
 
 	r.Use(gin.Logger())
 	if gin.Mode() == gin.ReleaseMode {
@@ -53,7 +54,7 @@ func NewEngine(config *Config) (*gin.Engine, error) {
 	}
 	r.Use(middleware.Cors())
 
-	room := r.Group("/rooms").Use(middleware.Authentication(), middleware.RateLimitRoom())
+	room := r.Group("/rooms").Use(middleware.Authentication(), middleware.RateLimit())
 	{
 		room.POST("", svc.CreateRoomHandler)
 		room.GET("/:room_name", svc.GetRoomHandler)

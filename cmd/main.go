@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"open-meet/pkg/api"
 	"os"
-
-	"github.com/gin-gonic/gin"
 )
 
 func init() {
@@ -41,39 +39,8 @@ func main() {
 		panic(err)
 	}
 
-	gin.SetMode(gin.DebugMode)
-
 	err = svc.Run(":8080")
 	if err != nil {
 		panic(err)
 	}
-}
-
-func backup() {
-	//mux := http.NewServeMux()
-	//
-	//mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-	//	w.Header().Set("Content-Type", "application/json")
-	//	_ = json.NewEncoder(w).Encode(map[string]string{"message": "pong"})
-	//})
-	//
-	//mux.HandleFunc("/livekit-tokens", participant.LiveKitTokenHandler)
-	//mux.HandleFunc("/callback", oauth.CallbackHandler)
-	//mux.HandleFunc("/rooms", room.CreateRoomHandler)
-	//mux.HandleFunc("/rooms/", room.GetRoomHandler)
-	//
-	//// Setup CORS
-	//c := cors.New(cors.Options{
-	//	AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGINS")},
-	//	AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-	//	AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
-	//	AllowCredentials: true,
-	//	Debug:            false,
-	//})
-	//
-	//// Wrap the mux with CORS middleware
-	//handler := c.Handler(mux)
-	//
-	//fmt.Println("Server starting on :8080")
-	//_ = http.ListenAndServe(":8080", handler)
 }
