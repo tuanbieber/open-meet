@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/livekit/protocol/auth"
 	"github.com/livekit/protocol/livekit"
@@ -64,9 +65,9 @@ func (p *participant) GenerateToken(ctx context.Context, roomName, identity stri
 		RoomJoin: true,
 		Room:     roomName,
 	}
-	at.AddGrant(grant).
+	at.SetVideoGrant(grant).
 		SetIdentity(identity).
-		SetValidFor(24 * 60 * 60) // 24 hours validity
+		SetValidFor(1 * time.Hour)
 
 	return at.ToJWT()
 }

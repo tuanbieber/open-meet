@@ -47,9 +47,10 @@ func NewLiveKitRoom() (*LiveKitRoom, error) {
 
 func (r *LiveKitRoom) Create(ctx context.Context, name, creatorEmail string) (*livekit.Room, error) {
 	room, err := r.client.CreateRoom(ctx, &livekit.CreateRoomRequest{
-		Name:            name,
-		EmptyTimeout:    1800, // 30 minutes
-		MaxParticipants: 10,
+		Name:             name,
+		EmptyTimeout:     30 * 60, // 30 minutes
+		DepartureTimeout: 5 * 60,  // 5 minutes
+		MaxParticipants:  100,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create room: %w", err)

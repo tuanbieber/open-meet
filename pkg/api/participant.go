@@ -10,7 +10,6 @@ import (
 
 type LiveKitTokenRequest struct {
 	RoomName string `json:"room_name" binding:"required"`
-	Identity string `json:"identity" binding:"required"`
 }
 
 // LiveKitTokenHandler handles requests for generating LiveKit tokens
@@ -25,7 +24,7 @@ func (s *Service) LiveKitTokenHandler(c *gin.Context) {
 		})
 		return
 	}
-	if req.Identity == "" || req.RoomName == "" {
+	if req.RoomName == "" {
 		log.Info("room name or identity is empty")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request: room_name and identity cannot be empty",

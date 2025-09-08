@@ -55,7 +55,7 @@ func (s *Service) CreateRoomHandler(c *gin.Context) {
 func (s *Service) GetRoomHandler(c *gin.Context) {
 	log := s.Log.WithName("get-room")
 
-	roomName := c.Param("room_name")
+	roomName := c.Param("roomName")
 	if roomName == "" {
 		log.Info("room name not provided")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "room name is required"})

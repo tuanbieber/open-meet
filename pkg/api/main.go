@@ -50,7 +50,7 @@ func NewEngine(config *config.Config) (*gin.Engine, error) {
 	room := r.Group("/rooms").Use(middleware.Authentication(), middleware.RateLimit())
 	{
 		room.POST("", svc.CreateRoomHandler)
-		room.GET("/:room_name", svc.GetRoomHandler)
+		room.GET("/:roomName", svc.GetRoomHandler)
 
 	}
 
