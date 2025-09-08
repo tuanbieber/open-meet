@@ -1,6 +1,7 @@
 package api
 
 import (
+	"open-meet/pkg/config"
 	"open-meet/pkg/logger"
 	"open-meet/pkg/middleware"
 	"open-meet/pkg/store"
@@ -9,23 +10,14 @@ import (
 	"github.com/go-logr/logr"
 )
 
-type Config struct {
-	GoogleClientID     string
-	GoogleClientSecret string
-	AllowedOrigins     string
-	LiveKitServer      string
-	LiveKitAPIKey      string
-	LiveKitAPISecret   string
-}
-
 type Service struct {
-	Config *Config
+	Config *config.Config
 	Log    logr.Logger
 	Store  store.Store
 	Cache  any
 }
 
-func NewEngine(config *Config) (*gin.Engine, error) {
+func NewEngine(config *config.Config) (*gin.Engine, error) {
 	log, err := logger.NewDevelopmentLogger()
 	if err != nil {
 		return nil, err

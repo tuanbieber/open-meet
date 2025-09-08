@@ -1,1 +1,18 @@
-.idea
+# Environment variables
+.env
+
+# Build artifacts
+bin/
+dist/
+
+# IDE files
+.idea/
+.vscode/
+
+# Temporary files
+*.tmp
+*.log
+
+# Go files
+*.test
+*.out

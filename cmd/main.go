@@ -2,45 +2,29 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"open-meet/pkg/api"
-	"os"
+	"open-meet/pkg/config"
 )
 
-func init() {
-	// Validate required environment variables
-	requiredEnvVars := []string{
-		"GOOGLE_CLIENT_ID",
-		"GOOGLE_CLIENT_SECRET",
-		"OAUTH_REDIRECT_URL",
-		"ALLOWED_ORIGINS",
-		"LIVEKIT_API_KEY",
-		"LIVEKIT_API_SECRET",
-	}
-	for _, envVar := range requiredEnvVars {
-		if os.Getenv(envVar) == "" {
-			fmt.Printf("Error: %s environment variable is required\n", envVar)
-			os.Exit(1)
-		}
-	}
-}
-
 func main() {
-	cfg := &api.Config{
-		GoogleClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
-		GoogleClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		AllowedOrigins:     os.Getenv("ALLOWED_ORIGINS"),
-		LiveKitServer:      os.Getenv("LIVEKIT_SERVER"),
-		LiveKitAPIKey:      os.Getenv("LIVEKIT_API_KEY"),
-		LiveKitAPISecret:   os.Getenv("LIVEKIT_API_SECRET"),
+	// Load configuration from .env file
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		fmt.Printf("Failed to load config: %v\n", err)
+		return
 	}
 
-	svc, err := api.NewEngine(cfg)
+	// Initialize API service with config
+	service, err := api.NewEngine(cfg)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Failed to create service: %v\n", err)
+		return
 	}
 
-	err = svc.Run(":8080")
-	if err != nil {
-		panic(err)
+	fmt.Printf("Server starting on port %s\n", cfg.Port)
+	if err := http.ListenAndServe(":"+cfg.Port, service); err != nil {
+		fmt.Printf("Server failed: %v\n", err)
 	}
 }
