@@ -5,6 +5,7 @@ import (
 	"open-meet/pkg/logger"
 	"open-meet/pkg/middleware"
 	"open-meet/pkg/store"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-logr/logr"
@@ -44,7 +45,7 @@ func NewEngine(config *config.Config) (*gin.Engine, error) {
 		r.Use(middleware.Security())
 		r.Use(middleware.Xss())
 	}
-	r.Use(middleware.Cors())
+	r.Use(middleware.Cors()).Use(middleware.Timeout(5 * time.Second))
 
 	room := r.Group("/rooms").Use(middleware.Authentication(), middleware.RateLimit())
 	{
