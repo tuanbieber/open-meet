@@ -12,9 +12,8 @@ type LiveKitTokenRequest struct {
 	RoomName string `json:"room_name" binding:"required"`
 }
 
-// LiveKitTokenHandler handles requests for generating LiveKit tokens
 func (s *Service) LiveKitTokenHandler(c *gin.Context) {
-	log := s.Log.WithName("livekit-token")
+	log := s.Log.WithName("LiveKitTokenHandler")
 
 	req := new(LiveKitTokenRequest)
 	if err := c.ShouldBindJSON(req); err != nil {

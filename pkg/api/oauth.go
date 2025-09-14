@@ -21,9 +21,8 @@ type GoogleClaims struct {
 	jwt.RegisteredClaims
 }
 
-// CallbackHandler decodes the token to extract user information
 func (s *Service) CallbackHandler(c *gin.Context) {
-	log := s.Log.WithName("oauth-callback")
+	log := s.Log.WithName("CallbackHandler")
 
 	var signInResponse GoogleSignInResponse
 	if err := c.ShouldBindJSON(&signInResponse); err != nil {

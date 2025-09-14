@@ -12,9 +12,8 @@ import (
 	"open-meet/pkg/util"
 )
 
-// CreateRoomHandler handles POST /rooms requests
 func (s *Service) CreateRoomHandler(c *gin.Context) {
-	log := s.Log.WithName("create-room")
+	log := s.Log.WithName("CreateRoomHandler")
 
 	// Get user email from context (set by Authentication middleware)
 	userEmail, err := util.GetUserEmailFromContext(c)
@@ -32,26 +31,19 @@ func (s *Service) CreateRoomHandler(c *gin.Context) {
 		return
 	}
 
-	// Log room creation
-	log.Info("room created",
-		"roomID", lkRoom.GetSid(),
-		"roomName", lkRoom.GetName(),
-		"creator", userEmail)
+	log.Info("room created", "roomID", lkRoom.GetSid(), "roomName", lkRoom.GetName(), "creator", userEmail)
 
-	response := &CreateRoomResponse{
+	c.JSON(http.StatusCreated, &CreateRoomResponse{
 		Room: &Room{
 			Name:      lkRoom.GetName(),
 			CreatedBy: userEmail,
 			CreatedAt: time.Now(),
 		},
-	}
-
-	c.JSON(http.StatusCreated, response)
+	})
 }
 
-// GetRoomHandler handles GET /rooms/:roomName requests
 func (s *Service) GetRoomHandler(c *gin.Context) {
-	log := s.Log.WithName("get-room")
+	log := s.Log.WithName("GetRoomHandler")
 
 	roomName := c.Param("roomName")
 	if roomName == "" {
@@ -59,6 +51,7 @@ func (s *Service) GetRoomHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "room name is required"})
 		return
 	}
+	log = log.WithValues("roomName", roomName)
 
 	lkRoom, found, err := s.Store.Room().Get(c.Request.Context(), roomName)
 	if err != nil {
@@ -72,9 +65,15 @@ func (s *Service) GetRoomHandler(c *gin.Context) {
 		return
 	}
 
-	log.Info("room accessed",
-		"roomName", lkRoom.GetName(),
-		"numParticipants", lkRoom.NumParticipants)
+	log.Info("room accessed", "roomName", lkRoom.GetName(), "numParticipants", lkRoom.NumParticipants)
+
+	hostMetadata := make(map[string]any)
+	host, found := s.Store.Room().GetRoomHost(lkRoom.GetName())
+	if !found {
+		log.Info("host not found")
+	} else {
+		hostMetadata["email"] = host
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"name":             lkRoom.Name,
@@ -82,6 +81,7 @@ func (s *Service) GetRoomHandler(c *gin.Context) {
 		"active_recording": lkRoom.ActiveRecording,
 		"creation_time":    lkRoom.CreationTime,
 		"sid":              lkRoom.Sid,
+		"host":             hostMetadata,
 	})
 }
 
